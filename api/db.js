@@ -19,7 +19,9 @@ export const connectDB = async () => {
   }
 
   try {
-    await mongoose.connect(uri);
+    await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 5000
+    });
     console.log('✅ Connected to MongoDB');
     useFallback = false;
   } catch (error) {
