@@ -22,7 +22,12 @@ function App() {
     try {
       setIsLoading(true);
       const res = await axios.get(API_URL);
-      setExpenses(res.data);
+      if (Array.isArray(res.data)) {
+        setExpenses(res.data);
+      } else {
+        console.error('API returned non-array:', res.data);
+        throw new Error('Invalid API response');
+      }
     } catch (err) {
       console.error('Failed to fetch expenses', err);
       setError('Failed to load expenses.');
