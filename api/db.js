@@ -2,7 +2,10 @@ import mongoose from 'mongoose';
 import fs from 'fs/promises';
 import path from 'path';
 
-const DB_FILE = path.join(process.cwd(), 'local-expenses.json');
+const isVercel = process.env.VERCEL || process.env.NOW_REGION;
+const DB_FILE = isVercel 
+  ? path.join('/tmp', 'local-expenses.json')
+  : path.join(process.cwd(), 'local-expenses.json');
 
 let useFallback = false;
 
