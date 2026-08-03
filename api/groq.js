@@ -14,22 +14,26 @@ Return only valid JSON with these exact keys:
 {
   "title": "merchant name or bill title",
   "amount": final payable total as a number,
-  "category": "The specific type of bill (e.g., Food, Electricity, Water, Internet, Travel, Education, Health, Shopping, Entertainment, etc.)",
+  "category": "one of [\\"Food\\", \\"Transport\\", \\"Shopping\\", \\"Bills\\", \\"Health\\", \\"Entertainment\\", \\"Travel\\", \\"Education\\", \\"Other\\"]",
   "notes": "short note if anything is unclear, otherwise empty string"
 }
 
 Rules:
 - Read the bill image carefully.
 - Use the final payable amount, grand total, net amount, or total due.
-- Do not use subtotal, tax amount, discount, or item price as the final amount.
-- For "category", provide a single, concise word or short phrase that accurately describes the type of expense (e.g., "Electricity", "Food", "Travel", "Education", "Rent", "Internet"). Do not use generic terms like "Bills" or "Invoice" if a more specific category like "Electricity" or "Water" applies.
+- Do not use subtotal, tax amount, discount, or item price as the final amount unless no grand total is visible.
+- DO NOT sum up individual items manually or perform repetitive arithmetic calculations. Just locate the printed total or subtotal directly from the bill.
+- Choose the most suitable category based on the merchant and bill contents.
+- If the image is a restaurant, cafe, grocery, or food delivery bill, use "Food".
 - If any field is unclear, make the best estimate and mention it in notes.
+- Keep your thinking/reasoning process very brief and concise.
 - Return JSON only. Do not include markdown or explanation.`;
 
   const dataUrl = `data:${mimeType};base64,${base64Image}`;
 
   const completion = await groq.chat.completions.create({
-    model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+    model: 'qwen/qwen3.6-27b',
+    max_tokens: 2048,
     messages: [
       {
         role: 'user',
@@ -44,17 +48,29 @@ Rules:
         ],
       },
     ],
-    temperature: 0.1,
+    temperature: 0.3,
   });
 
   const content = completion.choices[0].message.content.trim();
   
-  // Extract JSON if it's wrapped in markdown code blocks by accident
+  // Remove thinking blocks if present (e.g. <think>...</think>)
   let jsonStr = content;
+  if (jsonStr.includes('</think>')) {
+    jsonStr = jsonStr.split('</think>').pop().trim();
+  }
+
+  // Extract JSON if it's wrapped in markdown code blocks by accident
   if (jsonStr.startsWith('```json')) {
     jsonStr = jsonStr.replace(/^```json/, '').replace(/```$/, '').trim();
   } else if (jsonStr.startsWith('```')) {
     jsonStr = jsonStr.replace(/^```/, '').replace(/```$/, '').trim();
+  }
+
+  // Find the actual JSON object bounds as a fallback
+  const firstBrace = jsonStr.indexOf('{');
+  const lastBrace = jsonStr.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    jsonStr = jsonStr.substring(firstBrace, lastBrace + 1);
   }
 
   try {
