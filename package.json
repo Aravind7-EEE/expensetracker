@@ -11,5 +11,9 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
-  }
+  },
+  "workspaces": [
+    "frontend",
+    "api"
+  ]
 }
