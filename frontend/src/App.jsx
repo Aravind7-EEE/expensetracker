@@ -30,7 +30,21 @@ function App() {
       }
     } catch (err) {
       console.error('Failed to fetch expenses', err);
-      const errMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to load expenses.';
+      let errMsg = 'Failed to load expenses.';
+      if (err.response?.data) {
+        const data = err.response.data;
+        if (data.error && typeof data.error === 'object') {
+          errMsg = data.error.message || data.error.code || JSON.stringify(data.error);
+        } else if (typeof data.error === 'string') {
+          errMsg = data.error;
+        } else if (data.message) {
+          errMsg = data.message;
+        } else {
+          errMsg = JSON.stringify(data);
+        }
+      } else {
+        errMsg = err.message;
+      }
       setError(`Failed to load expenses: ${errMsg}`);
     } finally {
       setIsLoading(false);
