@@ -7,7 +7,7 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:api": "cd api && npm run dev",
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:frontend\"",
-    "build": "node build.js"
+    "build": "cd frontend && npm run build"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"
