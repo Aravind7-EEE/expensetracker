@@ -30,7 +30,8 @@ function App() {
       }
     } catch (err) {
       console.error('Failed to fetch expenses', err);
-      setError('Failed to load expenses.');
+      const errMsg = err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to load expenses.';
+      setError(`Failed to load expenses: ${errMsg}`);
     } finally {
       setIsLoading(false);
     }
