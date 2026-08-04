@@ -7,7 +7,7 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:api": "cd api && npm run dev",
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:frontend\"",
-    "build": "cd frontend && npm run build"
+    "build": "cd frontend && npm install && npm run build"
   },
   "dependencies": {
     "cors": "^2.8.6",
