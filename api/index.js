@@ -22,9 +22,13 @@ await connectDB();
 
 // Routes
 app.use('/api/expenses', expensesRouter);
+app.use('/expenses', expensesRouter);
 
 // Base route for health check
 app.get('/api', (req, res) => {
+  res.json({ message: 'AI Expense Tracker API is running' });
+});
+app.get('/', (req, res) => {
   res.json({ message: 'AI Expense Tracker API is running' });
 });
 
