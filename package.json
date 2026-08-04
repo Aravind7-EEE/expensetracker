@@ -9,6 +9,14 @@
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:frontend\"",
     "build": "cd frontend && npm run build"
   },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "groq-sdk": "^1.2.0",
+    "mongoose": "^9.6.2",
+    "multer": "^2.1.1"
+  },
   "devDependencies": {
     "concurrently": "^9.2.1"
   },
